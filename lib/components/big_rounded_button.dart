@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 class BigRoundedButton extends StatelessWidget {
   final Color color;
   final String title;
-  final Function onPressed;
+  final VoidCallback onPressed;
 
-  BigRoundedButton({this.color, this.title, this.onPressed});
+  BigRoundedButton(
+      {required this.color, required this.title, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
