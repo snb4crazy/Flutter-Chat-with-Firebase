@@ -10,7 +10,7 @@ class ChatScreen extends StatefulWidget {
   _ChatScreenState createState() => _ChatScreenState();
 }
 
-final _firestore = FirebaseFirestore.instance;
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 late User loggedInUser;
 
 class _ChatScreenState extends State<ChatScreen> {
@@ -121,6 +121,13 @@ class MessagesStream extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: _firestore.collection('messages').snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.hasError) {
+          //todo process error
+          return CircularProgressIndicator();
+        }
+        if (snapshot.data == null) {
+          return CircularProgressIndicator();
+        }
         if (!snapshot.hasData && snapshot.data.data != null) {
           return Center(
             child: CircularProgressIndicator(
@@ -131,9 +138,9 @@ class MessagesStream extends StatelessWidget {
         final messages = snapshot.data!.docs.reversed;
         List<MessageBubble> messageBubbles = [];
         for (var message in messages) {
-          final messageText = message.data['text'];
-          final messageSender = message.data['sender'];
-
+          Map<String, dynamic> data = message.data()! as Map<String, dynamic>;
+          final messageText = data['text'];
+          final messageSender = data['sender'];
           final currentUser = loggedInUser.email;
 
           final messageBubble = MessageBubble(
